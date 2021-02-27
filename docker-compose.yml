@@ -1,0 +1,12 @@
+version: "3"
+
+services: 
+
+  sberhack-backend:
+    container_name: sberhack-backend
+    image: sberhack-backend
+    build:
+      context: ./
+    env_file: .env
+    ports:
+      - "80:80"
