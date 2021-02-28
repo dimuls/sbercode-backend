@@ -56,6 +56,18 @@ type Dashboard struct {
 	Graphs json.RawMessage `db:"graphs" json:"graphs"`
 }
 
+type DashboardsRes struct {
+	Dashboards []Dashboard `json:"dashboard"`
+}
+
+type DashboardRes struct {
+	Dashboard Dashboard `json:"dashboard"`
+}
+
+type AddDashboardsRes struct {
+	ID int `json:"id"`
+}
+
 func main() {
 
 	s := core.Signer{
@@ -188,7 +200,7 @@ func main() {
 		db.Select("id", "name", "graphs").From("dashboard").
 			Where(goqu.Ex{"user_id": userID}).Executor().ScanStructs(&ds)
 
-		return c.JSON(ds)
+		return c.JSON(DashboardsRes{Dashboards: ds})
 	})
 
 	r.Get("/dashboards/:id", func(c *fiber.Ctx) error {
@@ -218,7 +230,7 @@ func main() {
 			return c.SendStatus(http.StatusNotFound)
 		}
 
-		return c.JSON(d)
+		return c.JSON(DashboardRes{Dashboard: d})
 	})
 
 	r.Delete("/dashboards/:id", func(c *fiber.Ctx) error {
@@ -270,7 +282,7 @@ func main() {
 				SendString("failed to insert dashboard to db:" + err.Error())
 		}
 
-		return c.JSON(id)
+		return c.JSON(AddDashboardsRes{ID: id})
 	})
 
 	r.Put("/dashboards", func(c *fiber.Ctx) error {
